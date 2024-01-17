@@ -1,10 +1,12 @@
 import enum
+
+from sqlalchemy.types import Enum as BaseEnum
+
 from core import db
 from core.apis.decorators import AuthPrincipal
 from core.libs import helpers, assertions
-from core.models.teachers import Teacher
 from core.models.students import Student
-from sqlalchemy.types import Enum as BaseEnum
+from core.models.teachers import Teacher
 
 
 class GradeEnum(str, enum.Enum):
@@ -29,7 +31,8 @@ class Assignment(db.Model):
     grade = db.Column(BaseEnum(GradeEnum))
     state = db.Column(BaseEnum(AssignmentStateEnum), default=AssignmentStateEnum.DRAFT, nullable=False)
     created_at = db.Column(db.TIMESTAMP(timezone=True), default=helpers.get_utc_now, nullable=False)
-    updated_at = db.Column(db.TIMESTAMP(timezone=True), default=helpers.get_utc_now, nullable=False, onupdate=helpers.get_utc_now)
+    updated_at = db.Column(db.TIMESTAMP(timezone=True), default=helpers.get_utc_now, nullable=False,
+                           onupdate=helpers.get_utc_now)
 
     def __repr__(self):
         return '<Assignment %r>' % self.id
@@ -72,7 +75,6 @@ class Assignment(db.Model):
 
         return assignment
 
-
     @classmethod
     def mark_grade(cls, _id, grade, auth_principal: AuthPrincipal):
         assignment = Assignment.get_by_id(_id)
@@ -88,6 +90,11 @@ class Assignment(db.Model):
     @classmethod
     def get_assignments_by_student(cls, student_id):
         return cls.filter(cls.student_id == student_id).all()
+
+    @classmethod
+    def get_assignments_by_principal(cls):
+        return cls.filter(
+            (cls.state == AssignmentStateEnum.SUBMITTED) | (cls.state == AssignmentStateEnum.GRADED)).all()
 
     @classmethod
     def get_assignments_by_teacher(cls, teacher_id):
