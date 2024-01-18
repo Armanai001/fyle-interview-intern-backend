@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, make_response, jsonify
 from core import db
 from core.apis import decorators
 from core.apis.responses import APIResponse
@@ -22,9 +22,12 @@ def list_assignments(p):
 @decorators.authenticate_principal
 def upsert_assignment(p, incoming_payload):
     """Create or Edit an assignment"""
+
+    if incoming_payload['content'] is None:
+        return make_response(jsonify(message='content is required'), 400)
+
     assignment = AssignmentSchema().load(incoming_payload)
     assignment.student_id = p.student_id
-
     upserted_assignment = Assignment.upsert(assignment)
     db.session.commit()
     upserted_assignment_dump = AssignmentSchema().dump(upserted_assignment)
@@ -37,7 +40,6 @@ def upsert_assignment(p, incoming_payload):
 def submit_assignment(p, incoming_payload):
     """Submit an assignment"""
     submit_assignment_payload = AssignmentSubmitSchema().load(incoming_payload)
-
     submitted_assignment = Assignment.submit(
         _id=submit_assignment_payload.id,
         teacher_id=submit_assignment_payload.teacher_id,

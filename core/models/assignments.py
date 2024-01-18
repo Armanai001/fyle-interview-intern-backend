@@ -69,6 +69,10 @@ class Assignment(db.Model):
         assertions.assert_valid(assignment.student_id == auth_principal.student_id, 'This assignment belongs to some other student')
         assertions.assert_valid(assignment.content is not None, 'assignment with empty content cannot be submitted')
 
+        # Assertion if trying to submit an assignment that is already submitted
+        assertions.assert_valid(assignment.state is not AssignmentStateEnum.SUBMITTED,
+                                'only a draft assignment can be submitted')
+
         assignment.teacher_id = teacher_id
         assignment.state = AssignmentStateEnum.SUBMITTED
         db.session.flush()
@@ -80,6 +84,14 @@ class Assignment(db.Model):
         assignment = Assignment.get_by_id(_id)
         assertions.assert_found(assignment, 'No assignment with this id was found')
         assertions.assert_valid(grade is not None, 'assignment with empty grade cannot be graded')
+
+        # Trying to grade assignment that is draft
+        assertions.assert_valid(assignment.state is not AssignmentStateEnum.DRAFT,
+                                'If an assignment is Draft, it cannot be graded')
+
+        # Trying to grade assignment that is submitted to another teacher
+        if auth_principal.teacher_id is not None:
+            assertions.assert_valid((assignment.teacher_id is auth_principal.teacher_id), "Teacher is invalid")
 
         assignment.grade = grade
         assignment.state = AssignmentStateEnum.GRADED
