@@ -1,7 +1,13 @@
 import json
-from flask import request
-from core.libs import assertions
 from functools import wraps
+
+from flask import request
+
+from core.libs import assertions
+from core.models.principals import Principal
+from core.models.students import Student
+from core.models.teachers import Teacher
+from core.models.users import User
 
 
 class AuthPrincipal:
@@ -17,7 +23,28 @@ def accept_payload(func):
     def wrapper(*args, **kwargs):
         incoming_payload = request.json
         return func(incoming_payload, *args, **kwargs)
+
     return wrapper
+
+
+def authenticate_user(user_id, student_id=None, teacher_id=None, principal_id=None):
+    user = User.get_by_id(user_id)
+    assertions.assert_true(user is not None, 'user not found')
+
+    if student_id is not None:
+        student = Student.get_by_id(user_id=user_id, student_id=student_id)
+        assertions.assert_true(student is not None, 'student not found')
+
+    elif teacher_id is not None:
+        teacher = Teacher.get_by_id(user_id=user_id, teacher_id=teacher_id)
+        assertions.assert_true(teacher is not None, 'teacher not found')
+
+    elif principal_id is not None:
+        principal = Principal.get_by_id(user_id=user_id, principal_id=principal_id)
+        assertions.assert_true(principal is not None, 'principal not found')
+
+    else:
+        assertions.assert_true(False, 'no student, teacher or principal id provided')
 
 
 def authenticate_principal(func):
@@ -33,6 +60,9 @@ def authenticate_principal(func):
             principal_id=p_dict.get('principal_id')
         )
 
+        authenticate_user(user_id=p.user_id, student_id=p.student_id, teacher_id=p.teacher_id,
+                          principal_id=p.principal_id)
+
         if request.path.startswith('/student'):
             assertions.assert_true(p.student_id is not None, 'requester should be a student')
         elif request.path.startswith('/teacher'):
@@ -43,4 +73,5 @@ def authenticate_principal(func):
             assertions.assert_found(None, 'No such api')
 
         return func(p, *args, **kwargs)
+
     return wrapper
