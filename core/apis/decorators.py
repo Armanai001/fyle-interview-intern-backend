@@ -29,22 +29,22 @@ def accept_payload(func):
 
 def authenticate_user(user_id, student_id=None, teacher_id=None, principal_id=None):
     user = User.get_by_id(user_id)
-    assertions.assert_true(user is not None, 'user not found')
+    assertions.assert_true(user is not None, 'User not found')
 
     if student_id is not None:
         student = Student.get_by_id(user_id=user_id, student_id=student_id)
-        assertions.assert_true(student is not None, 'student not found')
+        assertions.assert_true(student is not None, 'Student not found')
 
     elif teacher_id is not None:
         teacher = Teacher.get_by_id(user_id=user_id, teacher_id=teacher_id)
-        assertions.assert_true(teacher is not None, 'teacher not found')
+        assertions.assert_true(teacher is not None, 'Teacher not found')
 
     elif principal_id is not None:
         principal = Principal.get_by_id(user_id=user_id, principal_id=principal_id)
-        assertions.assert_true(principal is not None, 'principal not found')
+        assertions.assert_true(principal is not None, 'Principal not found')
 
     else:
-        assertions.assert_true(False, 'no student, teacher or principal id provided')
+        assertions.assert_true(False, 'No Student, Teacher or Principal id provided')
 
 
 def authenticate_principal(func):
