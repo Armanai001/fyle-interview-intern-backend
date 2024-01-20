@@ -1,34 +1,24 @@
 from flask import Blueprint
+
 from core import db
 from core.apis import decorators
 from core.apis.assignments.schema import AssignmentSchema, AssignmentGradeSchema
 from core.apis.responses import APIResponse
 from core.models.assignments import Assignment
-from core.models.teachers import Teacher
-from core.apis.teachers.schema import TeacherSchema
 
 principal_assignments_resources = Blueprint('principal_assignments_resources', __name__)
 
 
-@principal_assignments_resources.route('/assignments', methods=['GET'], strict_slashes=False)
+@principal_assignments_resources.route('/', methods=['GET'], strict_slashes=False)
 @decorators.authenticate_principal
-def list_assignments(p):
+def list_assignments(_):
     """Returns list of assignments"""
     principal_assignments = Assignment.get_assignments_by_principal()
     principal_assignments_dump = AssignmentSchema().dump(principal_assignments, many=True)
     return APIResponse.respond(data=principal_assignments_dump)
 
 
-@principal_assignments_resources.route('/teachers', methods=['GET'], strict_slashes=False)
-@decorators.authenticate_principal
-def list_teachers(p):
-    """Returns list of teachers"""
-    teachers = Teacher.list_teachers()
-    teachers_dump = TeacherSchema().dump(teachers, many=True)
-    return APIResponse.respond(data=teachers_dump)
-
-
-@principal_assignments_resources.route('/assignments/grade', methods=['POST'], strict_slashes=False)
+@principal_assignments_resources.route('/grade', methods=['POST'], strict_slashes=False)
 @decorators.accept_payload
 @decorators.authenticate_principal
 def regrade_assignment(p, incoming_payload):

@@ -1,4 +1,4 @@
-from marshmallow import Schema, EXCLUDE, post_load
+from marshmallow import EXCLUDE, post_load
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
 from core.models.teachers import Teacher
 
