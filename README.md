@@ -1,52 +1,33 @@
 # Fyle Backend Challenge
 
-## Who is this for?
-
-This challenge is meant for candidates who wish to intern at Fyle and work with our engineering team. You should be able to commit to at least 6 months of dedicated time for internship.
-
-## Why work at Fyle?
-
-Fyle is a fast-growing Expense Management SaaS product. We are ~40 strong engineering team at the moment. 
-
-We are an extremely transparent organization. Check out our [careers page](https://careers.fylehq.com) that will give you a glimpse of what it is like to work at Fyle. Also, check out our Glassdoor reviews [here](https://www.glassdoor.co.in/Reviews/Fyle-Reviews-E1723235.htm). You can read stories from our teammates [here](https://stories.fylehq.com).
+## About me
+Hello I am Arman from india. This is the solution of Fyle Backend Challenge for internship.
 
 
-## Challenge outline
-
-This challenge involves writing a backend service for a classroom. The challenge is described in detail [here](./Application.md)
-
-
-## What happens next?
-
-You will hear back within 48 hours from us via email. 
-
-
-## Installation
-
-1. Fork this repository to your github account
-2. Clone the forked repository and proceed with steps mentioned below
-
-### Install requirements
-
+#
+## Step 1 : Building the image
+This will build the docker image from the Dockerfile
 ```
-virtualenv env --python=python3.8
-source env/bin/activate
-pip install -r requirements.txt
+docker build -t fyle-interview-intern-backend .
 ```
-### Reset DB
 
+#
+## Step 2 : Running the image
+This will start the container
 ```
-export FLASK_APP=core/server.py
-rm core/store.sqlite3
-flask db upgrade -d core/migrations/
+docker run -d -p 7755:7755 fyle-interview-intern-backend
 ```
-### Start Server
 
+#
+## Step 3 : Past container id in the following command
+This will start a terminal from whitch application can be controlled.
 ```
-bash run.sh
+docker exec -it $id /bin/sh
 ```
+
+#
 ### Run Tests
-
+You can run tests in the terminal which you start in step 3
 ```
 pytest -vvv -s tests/
 
@@ -54,3 +35,8 @@ pytest -vvv -s tests/
 # pytest --cov
 # open htmlcov/index.html
 ```
+
+#
+### Remember that
+first time all test will be passed. 
+Next time because previousally database modified and in tests values are hardcoded so all tests will not passed
