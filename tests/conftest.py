@@ -1,5 +1,7 @@
-import pytest
 import json
+
+import pytest
+
 from tests import app
 
 
@@ -62,6 +64,54 @@ def h_principal():
         'X-Principal': json.dumps({
             'principal_id': 1,
             'user_id': 5
+        })
+    }
+
+    return headers
+
+
+@pytest.fixture
+def h_principal_invalid():
+    headers = {
+        'X-Principal': json.dumps({
+            'principal_id': 3434,
+            'user_id': 5
+        })
+    }
+
+    return headers
+
+
+@pytest.fixture
+def h_teacher_invalid():
+    headers = {
+        'X-Principal': json.dumps({
+            'teacher_id': 3434,
+            'user_id': 3
+        })
+    }
+
+    return headers
+
+
+@pytest.fixture
+def h_student_invalid():
+    headers = {
+        'X-Principal': json.dumps({
+            'student_id': 3434,
+            'user_id': 1
+        })
+    }
+
+    return headers
+
+
+@pytest.fixture
+def h_user_invalid():
+    headers = {
+        'X-Principal': json.dumps({
+            'principal_id': 1,
+            'user_id': 4343
         })
     }
 
